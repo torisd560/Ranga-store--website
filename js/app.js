@@ -1,16 +1,20 @@
+// load API
 const loadProducts = () => {
   const url = `https://fakestoreapi.com/products`;
   fetch(url)
     .then((response) => response.json())
     .then((data) => showProducts(data));
+    
 };
 loadProducts();
 
 // show all product in UI 
 const showProducts = (products) => {
+  console.log(products)
   const allProducts = products.map((pd) => pd);
   for (const product of allProducts) {
-    const image = product.images;
+    // console.log(product)
+    const image = product.image;
     const div = document.createElement("div");
     div.classList.add("product");
     div.innerHTML = `<div class="single-product">
@@ -37,7 +41,7 @@ const addToCart = (id, price) => {
 
 const getInputValue = (id) => {
   const element = document.getElementById(id).innerText;
-  const converted = parseInt(element);
+  const converted =  parseFloat(element);
   return converted;
 };
 
@@ -45,13 +49,16 @@ const getInputValue = (id) => {
 const updatePrice = (id, value) => {
   const convertedOldPrice = getInputValue(id);
   const convertPrice = parseFloat(value);
-  const total = convertedOldPrice + convertPrice;
-  document.getElementById(id).innerText = Math.round(total);
+  const  updatetotal = convertedOldPrice + convertPrice;
+  const  total =  parseFloat(updatetotal.toFixed(2))
+   document.getElementById(id).innerText = total;
+  //  document.getElementById(id).innerText = Math.round(total);
 };
 
 // set innerText function
 const setInnerText = (id, value) => {
-  document.getElementById(id).innerText = Math.round(value);
+  document.getElementById(id).innerText = parseFloat(value.toFixed(2));
+  //  document.getElementById(id).innerText = Math.round(value);
 };
 
 // update delivery charge and total Tax
