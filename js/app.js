@@ -1,14 +1,32 @@
-//=============== load products from API====================
+//=============== load all products from API====================
+const url = `https://fakestoreapi.com/products`;
+fetch(url)
+  .then((response) => response.json())
+  .then((data) => showProducts(data));
+  //===================== load category prodructs============
 const loadProducts = () => {
-  const url = `https://fakestoreapi.com/products`;
-  fetch(url)
-    .then((response) => response.json())
-    .then((data) => showProducts(data));
-};
-loadProducts();
+  const searchField = document.getElementById('input-field')
+  const searchText = searchField.value;
+  searchField.value = '';
+  if(!searchText){
+    alert(' No result found Please search by category name')
+    location.reload()
+    return;
+  }
+  fetch(`https://fakestoreapi.com/products/category/${searchText}`)
+            .then(res=>res.json())
+            .then(data=>showProducts(data))
+      };
 
 //============== show all product in UI ====================
 const showProducts = (products) => {
+  if(products.length===0){
+    alert('Your search text are invalid Please Search by right category name')
+    location.reload()
+    return;
+  }
+  const displayAllProducts = document.getElementById("all-products")
+  displayAllProducts.textContent = '';
   const allProducts = products.map((pd) => pd);
   for (const product of allProducts) {
     const image = product.image;
@@ -26,9 +44,36 @@ const showProducts = (products) => {
       <button onclick = "loadDetails(${product.id})" id="details-btn" class="btn btn-secondary">Details</button>
       </div>
       `;
-    document.getElementById("all-products").appendChild(div)
+      displayAllProducts.appendChild(div)
   }
 };
+// ==========================load details=================== 
+const loadDetails = productId =>{
+  const url = `https://fakestoreapi.com/products/${productId}`
+  fetch(url)
+  .then(res =>res.json())
+  .then(data =>showDetails(data))
+}
+// ========================show details====================
+const showDetails = product =>{
+  console.log(product)
+  const showDetailsDiv = document.getElementById('show-details')
+  showDetailsDiv.textContent = ''
+  const div = document.createElement('div')
+  div.innerHTML = `
+  <img src="${product.image}" class=" img-fluid card-img-top " alt="...">
+  <div class="card-body">
+    <h5 class="card-title">${product.title}</h5>
+    <p> Category : ${product.category}</p>
+    <p>Information : ${product.description.slice(0,105)}.</p>
+    <p class = "fw-bold"><span class = "text-danger"><i class="fas fa-star"></i> Average Rate</span> : ${product?.rating?.rate}</p>
+    <p class = "fw-bold"><span class = "text-success"><i class="fas fa-male"></i> Count</span> : ${product?.rating?.count}</p>
+    <h3>Price: $ ${product.price}</h3>
+  </div>
+  `;
+  showDetailsDiv.appendChild(div)
+  showDetailsDiv.style.display = 'block'
+}
 //===================== add products to cart=========================
 let count = 0;
 const addToCart = (id, price) => {
@@ -82,30 +127,5 @@ const updateTotal = () => {
     getInputValue("total-tax");
   document.getElementById("total").innerText = parseFloat(grandTotal.toFixed(2));
 };
-// ==========================load details=================== 
-const loadDetails = productId =>{
-  const url = `https://fakestoreapi.com/products/${productId}`
-  fetch(url)
-  .then(res =>res.json())
-  .then(data =>showDetails(data))
-}
-// ========================show details====================
-const showDetails = product =>{
-  console.log(product)
-  const showDetailsDiv = document.getElementById('show-details')
-  showDetailsDiv.textContent = ''
-  const div = document.createElement('div')
-  div.innerHTML = `
-  <img src="${product.image}" class=" img-fluid card-img-top " alt="...">
-  <div class="card-body">
-    <h5 class="card-title">${product.title}</h5>
-    <p> Category : ${product.category}</p>
-    <p>Information : ${product.description.slice(0,105)}.</p>
-    <p class = "fw-bold"><span class = "text-danger"><i class="fas fa-star"></i> Average Rate</span> : ${product?.rating?.rate}</p>
-    <p class = "fw-bold"><span class = "text-success"><i class="fas fa-male"></i> Count</span> : ${product?.rating?.count}</p>
-    <h3>Price: $ ${product.price}</h3>
-  </div>
-  `
-  showDetailsDiv.appendChild(div)
-  showDetailsDiv.style.display = 'block'
-}
+
+
